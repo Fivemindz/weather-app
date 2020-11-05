@@ -16,7 +16,7 @@ const getWeather = async (url, zip, key)=>{
   }
 }
 
-const postWeather = async (url, data)=>{
+const postWeather = async (data)=>{
   const res = await fetch('http://localhost:8000/postData', {
   method: 'POST',
   credentials: 'same-origin',
@@ -27,10 +27,20 @@ const postWeather = async (url, data)=>{
   });
   try {
     const newData = await res.json();
-    console.log(newData);
-    return newData
   } catch(error) {
     console.log("error", error);
+  }
+}
+
+const updateUI = async ()=>{
+  const request = await fetch('http://localhost:8000/getData');
+  try{
+    const allData = await request.json();
+    document.getElementById('date').innerHTML = allData.date;
+    document.getElementById('temp').innerHTML = allData.temperature;
+    document.getElementById('content').innerHTML = allData.user_response;
+  }catch(error){
+    console.log("error", error)
   }
 }
 
@@ -42,16 +52,12 @@ function performAction(e){
   .then(function(data){
     let temp = data.main['temp'];
     let user_response = document.getElementById('feelings').value;
-    postWeather('/postData', {
+    postWeather({
       temperature:temp, 
       date:newDate, 
       user_response:user_response
-    });
-  });
-  // .then(function(projectData){
-  //   let 
-  // })
-  
-  
-  
+    }).then(function(){
+      updateUI()
+    })
+  })
 }
